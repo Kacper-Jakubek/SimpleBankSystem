@@ -11,4 +11,20 @@ public class AccountEntity {
     private long id;
     @Column(name = "balance")
     private BigDecimal accountBalance;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getAccountBalance() {
+        return accountBalance;
+    }
+
+    public void setAccountBalance(BigDecimal accountBalance) {
+        this.accountBalance = accountBalance;
+    }
 }

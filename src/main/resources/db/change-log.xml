@@ -39,10 +39,9 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="balance" type="BIGINT">
+            <column name="balance" type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-
     </changeSet>
 </databaseChangeLog>
