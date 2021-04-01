@@ -2,6 +2,7 @@ package pl.jakubek.banksystem.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Entity(name = "account")
 public class AccountEntity {
@@ -11,6 +12,8 @@ public class AccountEntity {
     private long id;
     @Column(name = "balance")
     private BigDecimal accountBalance;
+    @Column(name = "number")
+    private Long accountNumber;
 
     public long getId() {
         return id;
@@ -27,4 +30,9 @@ public class AccountEntity {
     public void setAccountBalance(BigDecimal accountBalance) {
         this.accountBalance = accountBalance;
     }
+
+    public Long getAccountNumber() { return accountNumber; }
+
+    public void setAccountNumber(Long accountNumber) { this.accountNumber = accountNumber; }
+
 }

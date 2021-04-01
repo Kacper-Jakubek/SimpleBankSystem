@@ -4,11 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
-import pl.jakubek.banksystem.entity.PersonEntity;
 import pl.jakubek.banksystem.entity.UserEntity;
 import pl.jakubek.banksystem.repository.UserRepository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -39,10 +38,23 @@ class UserServiceTest {
 
     @Test
     void shouldAddUser(){
-        userService.addUser("abd", "dba");
+        userService.addUser("abcdef","Abcdef123","Abcdef123");
 
-        boolean correct = userService.findUser("abd","dba");
+        boolean correct = userService.findUser("abcdef","Abcdef123");
 
         assertTrue(correct);
+    }
+
+    @Test
+    void shouldValidateProperly(){
+        String badLogin = userService.validateRegistration("abc","Abcdef123","Abcdef123");
+        String badRepeat = userService.validateRegistration("abcdef","Abcdef123","Abcdef");
+        String badPassword = userService.validateRegistration("abcdef","abcdef1","abcdef1");
+        String correct = userService.validateRegistration("abcdef","Abcdef123","Abcdef123");
+
+        assertEquals(badLogin, "login-failed");
+        assertEquals(badRepeat, "repeatedPassword-failed");
+        assertEquals(badPassword, "password-failed");
+        assertEquals(correct, "validated");
     }
 }
