@@ -1,7 +1,6 @@
 package pl.jakubek.banksystem.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import pl.jakubek.banksystem.entity.UserEntity;
 

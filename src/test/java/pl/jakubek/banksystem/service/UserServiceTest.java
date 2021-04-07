@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import pl.jakubek.banksystem.entity.UserEntity;
+import pl.jakubek.banksystem.form.RegisterForm;
 import pl.jakubek.banksystem.repository.UserRepository;
+import pl.jakubek.banksystem.service.validation.validationEnum;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -24,37 +25,44 @@ class UserServiceTest {
 
     @Test
     void shouldFindExistingUser(){
+        RegisterForm registerForm = new RegisterForm();
+        registerForm.setLogin("abc");
+        registerForm.setPassword("cba");
         UserEntity validUser = new UserEntity();
         validUser.setLogin("abc");
         validUser.setPassword("cba");
 
         userRepository.save(validUser);
 
-        boolean correct = userService.findUser("abc", "cba");
+        String correct = userService.findUser(registerForm);
 
-        assertTrue(correct);
+        assertEquals("valid",correct);
 
     }
 
     @Test
     void shouldAddUser(){
-        userService.addUser("abcdef","Abcdef123","Abcdef123");
+        RegisterForm registerForm = new RegisterForm();
+        registerForm.setLogin("abcdef");
+        registerForm.setPassword("Abcdef123");
+        registerForm.setRepeated("Abcdef123");
+        userService.addUser(registerForm);
 
-        boolean correct = userService.findUser("abcdef","Abcdef123");
+        String correct = userService.findUser(registerForm);
 
-        assertTrue(correct);
+        assertEquals("valid",correct);
     }
 
     @Test
     void shouldValidateProperly(){
-        String badLogin = userService.validateRegistration("abc","Abcdef123","Abcdef123");
-        String badRepeat = userService.validateRegistration("abcdef","Abcdef123","Abcdef");
-        String badPassword = userService.validateRegistration("abcdef","abcdef1","abcdef1");
-        String correct = userService.validateRegistration("abcdef","Abcdef123","Abcdef123");
+        validationEnum badLogin = userService.validateRegistration("abc","Abcdef123","Abcdef123");
+        validationEnum badRepeat = userService.validateRegistration("abcdef","Abcdef123","Abcdef");
+        validationEnum badPassword = userService.validateRegistration("abcdef","abcdef1","abcdef1");
+        validationEnum correct = userService.validateRegistration("abcdef","Abcdef123","Abcdef123");
 
-        assertEquals(badLogin, "login-failed");
-        assertEquals(badRepeat, "repeatedPassword-failed");
-        assertEquals(badPassword, "password-failed");
-        assertEquals(correct, "validated");
+        assertEquals(validationEnum.LOGIN, badLogin);
+        assertEquals(validationEnum.REPEATED, badRepeat);
+        assertEquals(validationEnum.PASSWORD, badPassword);
+        assertEquals(validationEnum.VALIDATED, correct);
     }
 }

@@ -2,7 +2,6 @@ package pl.jakubek.banksystem.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Entity(name = "account")
 public class AccountEntity {

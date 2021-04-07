@@ -2,27 +2,39 @@ package pl.jakubek.banksystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.jakubek.banksystem.entity.AccountEntity;
+import pl.jakubek.banksystem.entity.PersonEntity;
 import pl.jakubek.banksystem.entity.UserEntity;
+import pl.jakubek.banksystem.form.RegisterForm;
+import pl.jakubek.banksystem.repository.AccountRepository;
+import pl.jakubek.banksystem.repository.PersonRepository;
 import pl.jakubek.banksystem.repository.UserRepository;
+import pl.jakubek.banksystem.service.validation.validationEnum;
+
+import java.math.BigDecimal;
 
 @Service
 public class UserService implements IUserService {
 
     UserRepository userRepository;
+    AccountRepository accountRepository;
+    PersonRepository personRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AccountRepository accountRepository, PersonRepository personRepository) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
     }
 
-    public String validateRegistration(String login, String password, String repeatedPassword){
+    public validationEnum validateRegistration(String login, String password, String repeatedPassword){
 
         if(login.length()<4 || login.length()>20){
-            return "login-failed";
+            return validationEnum.LOGIN;
         }
 
         if(!password.equals(repeatedPassword)){
-            return "repeatedPassword-failed";
+            return validationEnum.REPEATED;
         }
 
         boolean containsOnlyLowercase=true;
@@ -37,23 +49,53 @@ public class UserService implements IUserService {
             }
         }
         if(containsOnlyLowercase||containsOnlyLetters){
-            return "password-failed";
+            return validationEnum.PASSWORD;
         }
-        return"validated";
+        return validationEnum.VALIDATED;
     }
 
-    public boolean findUser(String login, String password){
-        UserEntity userEntity = userRepository.getByLogin(login);
-        return userEntity.getPassword().equals(password);
+    public String findUser(RegisterForm registerForm){
+        UserEntity userEntity = userRepository.getByLogin(registerForm.getLogin());
+        if(userEntity.getPassword().equals(registerForm.getPassword())){
+            return "valid";
+        }else {
+            return "invalid";
+        }
     }
 
-    public void addUser(String login, String password, String repeatedPassword){
-        String validation = validateRegistration(login, password, repeatedPassword);
-        if(validation.equals("validated")){
+    public String addUser(RegisterForm registerForm){
+        switch (validateRegistration(registerForm.getLogin(), registerForm.getPassword(), registerForm.getRepeated())){
+            case VALIDATED:
             UserEntity userEntity = new UserEntity();
-            userEntity.setLogin(login);
-            userEntity.setPassword(password);
+            userEntity.setLogin(registerForm.getLogin());
+            userEntity.setPassword(registerForm.getPassword());
+            userEntity.setEmail(registerForm.getEmail());
+
+            PersonEntity personEntity = new PersonEntity();
+            personEntity.setFirstName(registerForm.getFirstName());
+            personEntity.setLastName(registerForm.getLastName());
+            personEntity.setCity(registerForm.getCity());
+            personEntity.setHouseNumber(registerForm.getHouseNumber());
+            personEntity.setStreet(registerForm.getStreet());
+            personEntity.setPostalCode(registerForm.getPostalCode());
+            personRepository.save(personEntity);
+
+            AccountEntity accountEntity = new AccountEntity();
+            accountEntity.setAccountBalance(new BigDecimal(0));
+            accountEntity.setAccountNumber((long) (Math.random()*(1e27-1e25)+1e25));
+            accountRepository.save(accountEntity);
+
+            userEntity.setAccount(accountEntity);
+            userEntity.setPersonalData(personEntity);
             userRepository.save(userEntity);
+            return "validated";
+            case LOGIN:
+                return "login-failed";
+            case PASSWORD:
+                return "password-failed";
+            case REPEATED:
+                return "repeated-failed";
         }
+        return "unknown error";
     }
 }
