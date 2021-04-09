@@ -82,7 +82,9 @@ public class UserService implements IUserService {
 
             AccountEntity accountEntity = new AccountEntity();
             accountEntity.setAccountBalance(new BigDecimal(0));
-            accountEntity.setAccountNumber((long) (Math.random()*(1e27-1e25)+1e25));
+            long firstHalf = (long) (Math.random()*(1e13-1e12)+1e12);
+            long secondHalf = (long) (Math.random()*(1e13-1e12)+1e12);
+            accountEntity.setAccountNumber(Long.toString(firstHalf) + secondHalf);
             accountRepository.save(accountEntity);
 
             userEntity.setAccount(accountEntity);

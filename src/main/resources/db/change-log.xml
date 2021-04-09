@@ -57,7 +57,29 @@
             <column name="balance" type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
-            <column name="number" type="BIGINT">
+            <column name="number" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="init-db-20210409" author="Kacper Jakubek">
+        <createTable tableName="transaction">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
